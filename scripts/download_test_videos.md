@@ -50,13 +50,33 @@ Conteo manual (revisado con hojas de contacto cada 0.5 s):
 
 > ⚠️ Dificultades: la puerta de vidrio corta los tracks (reflejos/oclusión), gente muy cerca de la cámara y una persona parada sobre la línea varios segundos.
 
+## ✅ `supermercado_puertas.mp4`
+
+| Campo | Valor |
+|:--|:--|
+| Fuente | https://www.pexels.com/video/people-going-inside-a-store-with-automatic-sliding-doors-6641527/ |
+| Licencia | Pexels (uso comercial libre) |
+| Resolución | 2560×1440 · 29.97 FPS · 592 frames (19.8 s) |
+| Escena | Entrada de supermercado con puertas corredizas automáticas; la gente llega por la acera desde la izquierda |
+| Línea | `--line 750,400,750,1440 --invert` (vertical, borde izquierdo de la puerta). Izquierda → derecha = ENTRA |
+| **Esperado (manual)** | **4 entradas, 1 salida** |
+
+| t (s) | Evento | Persona |
+|:--:|:--:|:--|
+| ~2 | ENTRA | hombre camisa a cuadros roja, gorra morada |
+| ~3 | ENTRA | hombre camisa a cuadros azul |
+| ~12.5 | ENTRA | mujer chaqueta verde, botas |
+| ~14 | ENTRA | hombre abrigo negro, gorra verde |
+| ~18 | SALE | hombre chaleco verde, mangas amarillas |
+
+> Al final (19–19.5 s) se ve a alguien dentro de la tienda que **no** llega a salir: no cuenta.
+
 ---
 
 ## 🔜 Pendientes (ver §8 de `CLAUDE.md`)
 
 | Video | Caso | Para qué |
 |:--|:--|:--|
-| Supermercado puertas automáticas (Pexels 6641527) | A | Segunda prueba de ENTRADAS |
 | CAVIAR (Edimburgo) | A | Medir contra *ground truth* oficial |
 | Intersección con tiendas (Pexels 5631418) | B | Flujo peatonal |
 | Shibuya (Pexels 19743475) | C | Estrés con multitudes, `imgsz 1280` |

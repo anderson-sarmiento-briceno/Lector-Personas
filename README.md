@@ -15,7 +15,7 @@
 
 ![Fase](https://img.shields.io/badge/fase-2%20negocio%20%E2%9C%94-2ea44f?style=flat-square)
 ![Tests](https://img.shields.io/badge/tests-29%20passing-0A9EDC?style=flat-square&logo=pytest&logoColor=white)
-![Error](https://img.shields.io/badge/error%20IN%2FOUT-11%25-yellow?style=flat-square)
+![Error](https://img.shields.io/badge/error%20IN%2FOUT-0%25%20%E2%80%93%2011%25-yellow?style=flat-square)
 ![Tracker](https://img.shields.io/badge/tracker-ByteTrack-orange?style=flat-square)
 ![Licencia](https://img.shields.io/badge/licencia-AGPL--3.0-blue?style=flat-square)
 
@@ -134,7 +134,10 @@ python scripts/run.py --source videos/calle.mp4 --model yolo26s.pt --imgsz 960 -
 | Video | Esperado (a mano) | Modelo | Error |
 |:--|:--:|:--:|:--:|
 | 🌷 Hombre entrando a una tienda (16 s) | 2 personas | **2** | ✅ 0 % |
-| 🍳 Restaurante, entradas y salidas (56 s) | 3 IN / 6 OUT | **3 IN / 5 OUT** | 🟡 11 % |
+| 🍳 Restaurante, entradas y salidas (56 s) · *escena difícil* | 3 IN / 6 OUT | **3 IN / 5 OUT** | 🟡 11 % |
+| 🛒 Supermercado, puertas automáticas (20 s) · *video nuevo, sin re-ajustar* | 4 IN / 1 OUT | **4 IN / 1 OUT** | ✅ 0 % |
+
+> 🧭 Para usarlo en otro negocio solo cambia la línea (`pick_line.py`): el método se validó en un video que no se usó para ajustarlo.
 
 Detalle, barridos y lecciones en [ARQUITECTURA.md § 6](ARQUITECTURA.md#6--pruebas-y-resultados).
 

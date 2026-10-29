@@ -23,7 +23,7 @@ Sin tracking no se puede contar personas únicas ni entradas/salidas sin contar 
 | Métrica | Confiabilidad | Comentario |
 |:--|:--:|:--|
 | En pantalla (por frame) | 🟢 alta | Solo depende del detector |
-| Entradas / salidas (línea) | 🟢 buena | 11 % de error en el video del restaurante (§6) |
+| Entradas / salidas (línea) | 🟢 buena | 0 % en el supermercado, 11 % en el restaurante (escena difícil) (§6) |
 | Únicos | 🔴 baja con oclusiones | Cada corte de track crea un ID nuevo: 112 "únicos" en un video con ~25 personas |
 
 ---
@@ -208,6 +208,8 @@ Cada cruce genera un `CrossingEvent(track_id, direction, frame_idx)` que va a co
 | 2026-10-29 | `restaurante_entradas_salidas` (4K, 56 s) | `yolo26n`, 640, ByteTrack, línea x=1600 | 91 | 9 | 2 / 4 | 3 / 6 | 19.8 | ❌ ID 37 SALE y luego ENTRA (parado en la puerta) |
 | 2026-10-29 | `restaurante_entradas_salidas` | `yolo26s`, 960, BoT-SORT, línea x=1600 | 112 | 12 | 3 / 5 | 3 / 6 | 16.1 | ⚠️ Total parecido pero con 2 eventos falsos (rebotes) |
 | 2026-10-29 | `restaurante_entradas_salidas` | **`yolo26s`, 960, BoT-SORT, línea x=1500, `once_per_id`** | 112 | 12 | **3 / 5** | 3 / 6 | 16.1 | ✅ **8/8 eventos reales**, 1 salida perdida → **error 11 %** |
+| 2026-10-29 | `supermercado_puertas` (2560×1440, 20 s) — **video nuevo, sin re-ajustar** | `yolo26s`, 960, BoT-SORT, `once_per_id`, línea x=750 `--invert` | 10 | 4 | **4 / 1** | 4 / 1 | 13.1 | ✅ **0 % de error**, 5/5 eventos en orden |
+| 2026-10-29 | `supermercado_puertas` | `yolo26n`, 640, ByteTrack, por dirección (base) | 6 | 3 | **4 / 1** | 4 / 1 | 17.9 | ✅ 0 % también: escena fácil, basta el modelo rápido |
 <!-- RESULTADOS -->
 
 > 📌 **Entorno:** Python 3.13, torch 2.14.1+cu126, ultralytics 8.4.192, opencv 5.0.0, RTX 3050 6 GB.
@@ -232,6 +234,26 @@ IN/OUT obtenidos, esperado **3 / 6**:
 4. 🎯 Pequeños cambios de posición de la línea (±100 px) cambian mucho el resultado → **siempre validar la línea con `replay_line.py`** contra un conteo manual.
 5. 🔢 "Únicos" no sirve en escenas con oclusión (112 vs ~25 personas reales): usar el conteo por línea, como advierte `CLAUDE.md`.
 
+#### Validación en un video nuevo: supermercado
+Para comprobar que el método **no quedó ajustado solo al restaurante**, se aplicó la misma configuración a otro video cambiando **únicamente la línea** (la puerta está en otro lugar y la gente entra en la dirección opuesta, de ahí `--invert`).
+
+| Línea x | s + BoT-SORT, `once_per_id` | n + ByteTrack, por dirección |
+|:--:|:--:|:--:|
+| 550 | 4 / 1 | 4 / 1 |
+| 650 | 4 / 1 | 4 / 1 |
+| **750** | **4 / 1** | **4 / 1** |
+| 850 | 4 / 1 | 4 / 1 |
+| 950 | 4 / 1 | 4 / 1 |
+
+6. ✅ **El método generaliza:** 0 % de error en el video nuevo, y el resultado no cambia moviendo la línea ±200 px.
+7. 🧭 **La dificultad la pone la escena, no el código.** En el supermercado no hay vidrio que corte los tracks, la gente pasa de a una y nadie se queda sobre la línea; el restaurante es el caso difícil.
+8. ⚙️ Recomendación por tipo de escena:
+
+| Escena | Configuración |
+|:--|:--|
+| Despejada, personas separadas (supermercado) | Base: `yolo26n` + ByteTrack → más rápido (17.9 FPS) |
+| Oclusiones, puertas de vidrio, gente que se queda en la puerta (restaurante) | `yolo26s` + BoT-SORT + `imgsz 960` + `--once-per-id` |
+
 ---
 
 ## 7. 📜 Historial de cambios
@@ -241,9 +263,10 @@ IN/OUT obtenidos, esperado **3 / 6**:
 | 2026-10-29 | 1 | Estructura inicial, `run.py`, detector, contador, anotación, pruebas del contador |
 | 2026-10-29 | 1 | README rediseñado, este documento, entorno `.venv` con CUDA y primera corrida real |
 | 2026-10-29 | 2 | `LineCounter` (IN/OUT, segmento, banda, `once_per_id`) con 18 pruebas; `export.py` (CSV por segundo, JSON con eventos y entorno, tracks); `pick_line.py`; `replay_line.py`; `--max-width` (4K→1080p); `test_smoke.py`; registro de videos con conteos manuales; evaluación en el restaurante: error 11 % |
+| 2026-10-29 | 2 | Validación en un video nuevo (supermercado) sin re-ajustar: 4/1 vs 4/1 manual, 0 % de error, estable ante ±200 px de línea |
 
 ## 8. 🔜 Siguientes pasos
 
 - Bajar el error de salidas: probar `yolo26m`, `imgsz 1280` y ajustar `track_buffer` de BoT-SORT para que el ID sobreviva detrás del vidrio.
-- Segundo video del Caso A (supermercado) y CAVIAR con *ground truth* oficial, para no ajustar todo a un solo clip.
+- CAVIAR con *ground truth* oficial (conteos hechos por terceros, no por nosotros).
 - Fase 3: zonas múltiples (`RegionCounter`), `--blur-faces`, comparativas de FPS CPU vs GPU.
