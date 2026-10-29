@@ -308,6 +308,7 @@ Guardar los videos descargados en `videos/` con nombres descriptivos. Para cada 
 - Mostrar barra de progreso o log cada N frames con FPS de procesamiento.
 - Si un cambio afecta la precisión del conteo, reportar el conteo antes/después sobre el mismo video.
 - No implementar reconocimiento facial ni identificación de personas.
+- **Mantener `ARQUITECTURA.md` al día** en cada cambio relevante: mapa de archivos, detalle de módulos, decisiones de diseño, resultados de corridas reales e historial de cambios.
 
 ### Comandos frecuentes
 ```bash
