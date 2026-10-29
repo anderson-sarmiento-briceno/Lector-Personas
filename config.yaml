@@ -1,0 +1,12 @@
+# Parámetros por defecto. Cualquier valor se puede sobrescribir por CLI.
+model: yolo26n.pt        # respaldo: yolo11n.pt
+conf: 0.35
+iou: 0.5
+imgsz: 640
+tracker: bytetrack.yaml  # o botsort.yaml
+vid_stride: 1            # no subir de 2
+device: null             # null = automático; "cpu", "0" (GPU), ...
+min_track_frames: 3      # frames mínimos para contar un ID como persona única
+output_dir: outputs
+log_every: 30            # cada cuántos frames imprimir progreso
+default_fps: 30.0        # si el video reporta FPS = 0

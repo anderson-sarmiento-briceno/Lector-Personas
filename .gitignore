@@ -1,0 +1,10 @@
+videos/*
+outputs/*
+models/*
+!videos/.gitkeep
+!outputs/.gitkeep
+!models/.gitkeep
+*.pt
+.venv/
+__pycache__/
+.pytest_cache/

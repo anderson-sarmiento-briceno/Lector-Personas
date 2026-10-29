@@ -1,0 +1,8 @@
+ultralytics>=8.3
+opencv-python
+pandas
+pyyaml
+lapx            # requerido por los trackers de Ultralytics
+supervision     # opcional, para anotaciones del video publicitario
+yt-dlp          # opcional, solo pruebas
+pytest
