@@ -34,11 +34,23 @@ def open_video(source: str, default_fps: float = 30.0) -> tuple[cv2.VideoCapture
     return cap, info
 
 
-def create_writer(path: Path, info: VideoInfo, fps: float | None = None) -> cv2.VideoWriter:
-    """Crea el VideoWriter MP4 de salida."""
+def resize_scale(width: int, max_width: int | None) -> float:
+    """Factor para que el frame no supere `max_width` (1.0 = sin cambio)."""
+    if not max_width or width <= max_width:
+        return 1.0
+    return max_width / width
+
+
+def scaled_size(info: VideoInfo, scale: float) -> tuple[int, int]:
+    # Ancho y alto pares: algunos códecs no aceptan tamaños impares
+    return (int(info.width * scale) // 2 * 2, int(info.height * scale) // 2 * 2)
+
+
+def create_writer(path: Path, size: tuple[int, int], fps: float) -> cv2.VideoWriter:
+    """Crea el VideoWriter MP4 de salida con tamaño (ancho, alto)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    writer = cv2.VideoWriter(str(path), fourcc, fps or info.fps, (info.width, info.height))
+    writer = cv2.VideoWriter(str(path), fourcc, fps, size)
     if not writer.isOpened():
         raise RuntimeError(f"No se pudo crear el video de salida: {path}")
     return writer

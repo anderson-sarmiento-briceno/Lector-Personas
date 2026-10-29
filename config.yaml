@@ -5,8 +5,19 @@ iou: 0.5
 imgsz: 640
 tracker: bytetrack.yaml  # o botsort.yaml
 vid_stride: 1            # no subir de 2
-device: null             # null = automático; "cpu", "0" (GPU), ...
-min_track_frames: 3      # frames mínimos para contar un ID como persona única
+device: null             # null = automático (usa la GPU si hay CUDA); "cpu", "0", ...
+min_track_frames: 3      # frames mínimos de vida para contar un ID (únicos y cruces)
+
+# Conteo por línea (Fase 2). Coordenadas en píxeles del video ORIGINAL.
+line: null               # ej. "1600,900,1600,2160"; usar src/pick_line.py para elegirla
+invert: false            # invierte qué dirección es ENTRADA
+band: 0                  # zona muerta ±px (originales) alrededor de la línea
+once_per_id: false       # true = cada ID cuenta una sola vez (evita rebotes de quien se queda en la puerta)
+
+# Rendimiento
+max_width: 1920          # reduce videos 4K a 1080p antes de procesar; null = resolución original
+max_frames: null         # procesar solo N frames (pruebas)
+
 output_dir: outputs
 log_every: 30            # cada cuántos frames imprimir progreso
 default_fps: 30.0        # si el video reporta FPS = 0
